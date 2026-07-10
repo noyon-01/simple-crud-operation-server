@@ -1,5 +1,5 @@
 const express = require("express");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -34,6 +34,35 @@ async function connectToMongoDB() {
     app.get("/users", async (req, res) => {
       const cursor = usersCollection.find();
       const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      // console.log(id);
+      const query = {
+        _id: new ObjectId(id),
+      };
+      // console.log(query);
+      const result = await usersCollection.findOne(query);
+      // console.log(result)
+      res.send(result);
+    });
+
+    app.post("/users", async (req, res) => {
+      const newUser = req.body;
+      console.log("server data:", newUser)
+      const result = await usersCollection.insertOne(newUser);
+      res.send(result);
+    });
+
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {
+        _id: new ObjectId(id),
+      };
+      const result = await usersCollection.deleteOne(query);
+      console.log(result);
       res.send(result);
     });
 
